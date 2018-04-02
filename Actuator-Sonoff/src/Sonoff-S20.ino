@@ -4,7 +4,6 @@
  1.0.0    25-03-2018  Initial version
 */
 
-#include <Arduino.h>
 #include <Homie.h>
 
 const int PIN_RELAY = 12;
