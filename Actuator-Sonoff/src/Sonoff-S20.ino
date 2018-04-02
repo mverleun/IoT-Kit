@@ -1,9 +1,9 @@
 /*
- *   Tested with "WiFi Smart Socket ESP8266 MQTT"
- *   and "Sonoff - WiFi Wireless Smart Switch ESP8266 MQTT"
- *
- *   The Relay could be toggeled with the physical pushbutton
+
+ 1.0.1    02-04-2018  Updated Libraries, added code from example
+ 1.0.0    25-03-2018  Initial version
 */
+
 #include <Arduino.h>
 #include <Homie.h>
 
@@ -33,6 +33,11 @@ void toggleRelay() {
   digitalWrite(PIN_RELAY, on ? LOW : HIGH);
   switchNode.setProperty("on").send(on ? "false" : "true");
   Homie.getLogger() << "Switch is " << (on ? "off" : "on") << endl;
+}
+
+
+void setupHandler() {
+  // switchNode.setProperty("unit").send("c");
 }
 
 void loopHandler() {
@@ -99,25 +104,23 @@ void onHomieEvent(const HomieEvent& event) {
 
 void setup() {
   Serial.begin(115200);
-  Serial.println();
-  Serial.println();
+  Serial << endl << endl;
 
-  // Initialize GPIO
   pinMode(PIN_RELAY, OUTPUT);
   pinMode(PIN_BUTTON, INPUT);
-
-  // Switch relay off
   digitalWrite(PIN_RELAY, LOW);
 
-  Homie_setFirmware("itead-sonoff-buton", "1.0.0");
+  Homie_setFirmware("sonoff-s20", "1.0.1");
+
   Homie.setLedPin(PIN_LED, LOW).setResetTrigger(PIN_BUTTON, LOW, 5000);
 
-  // Define MQTT subtopic to 'on' and define handler
   switchNode.advertise("on").settable(switchOnHandler);
 
-  Homie.setLoopFunction(loopHandler);
-  Homie.onEvent(onHomieEvent);
+  Homie.setSetupFunction(setupHandler).setLoopFunction(loopHandler);
   Homie.setup();
+
+  // Initialize device.
+
 }
 
 void loop() {

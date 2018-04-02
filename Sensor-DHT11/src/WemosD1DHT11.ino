@@ -1,4 +1,6 @@
 
+// 1.0.1  02-04-2018 Updated Libraries, added ui in /data
+// 1.0.0  25-03-2018 Initial version
 #include <Arduino.h>
 #include <Homie.h>
 
@@ -6,7 +8,7 @@
 #include <DHT.h>
 #include <DHT_U.h>
 
-#define DHTPIN            2         // Pin which is connected to the DHT sensor.
+#define DHTPIN            2 // D4        // Pin which is connected to the DHT sensor.
 
 // Uncomment the type of sensor in use:
 #define DHTTYPE           DHT11     // DHT 11
@@ -22,10 +24,16 @@ float previous_temperature = 0.0;
 float current_humidity;
 float previous_humidity = 0.0;
 
-HomieNode temperatureNode("temperature", "temperature");
+HomieNode temperatureNode("environment", "temperature");
 
 void setupHandler() {
-  temperatureNode.setProperty("unit").send("c");
+  temperatureNode.setProperty("temperature_unit").send("c");
+  temperatureNode.setProperty("humidity_unit").send("%");
+}
+
+bool broadcastHandler(const String& level, const String& value) {
+  Serial << "Received broadcast level " << level << ": " << value << endl;
+  return true;
 }
 
 void loopHandler() {
@@ -42,7 +50,7 @@ void loopHandler() {
     // Only publish info if there is a change in Temperature
     if ( current_temperature != previous_temperature ) {
       Homie.getLogger() << "Temperature: " << current_temperature << " °C" << endl;
-      temperatureNode.setProperty("degrees").send(String(current_temperature));
+      temperatureNode.setProperty("temperature").send(String(current_temperature));
       previous_temperature = current_temperature;
     }
   }
@@ -75,6 +83,9 @@ void onHomieEvent(const HomieEvent& event) {
       break;
     case HomieEventType::OTA_STARTED:
       Serial << "OTA started" << endl;
+      break;
+    case HomieEventType::OTA_PROGRESS:
+      Serial << "OTA progress, " << event.sizeDone << "/" << event.sizeTotal << endl;
       break;
     case HomieEventType::OTA_FAILED:
       Serial << "OTA failed" << endl;
@@ -109,11 +120,12 @@ void onHomieEvent(const HomieEvent& event) {
 void setup() {
   Serial.begin(115200);
   Serial << endl << endl;
-  Homie_setFirmware("wemos-d1-dht11", "1.0.0");
+  Homie_setBrand("MarCoach-IoT"); // before Homie.setup()
+  Homie_setFirmware("wemos-d1-dht11", "1.0.1");
   Homie.setSetupFunction(setupHandler).setLoopFunction(loopHandler);
-
-  temperatureNode.advertise("unit");
-  temperatureNode.advertise("degrees");
+  Homie.setBroadcastHandler(broadcastHandler); // before Homie.setup()
+  temperatureNode.advertise("temperature_unit");
+  temperatureNode.advertise("humidity_unit");
 
   Homie.setup();
 
@@ -123,7 +135,7 @@ void setup() {
   sensor_t sensor;
   dht.humidity().getSensor(&sensor);
   // Set delay between sensor readings based on sensor details.
-  delayMS = sensor.min_delay / 1000;
+  delayMS = 5000;
 }
 
 void loop() {
