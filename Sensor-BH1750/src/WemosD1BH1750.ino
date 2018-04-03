@@ -1,5 +1,5 @@
 
-#include <Arduino.h>
+
 #include <Homie.h>
 
 /*
@@ -17,6 +17,9 @@
   be 0x23 (by default).
 */
 
+
+// SCL = D1
+// SDA = D2
 #include <Wire.h>
 #include <BH1750.h>
 
@@ -107,7 +110,7 @@ void setup() {
 
   // Initialize the I2C bus (BH1750 library doesn't do this automatically)
   // On esp8266 you can select SCL and SDA pins using Wire.begin(D4, D3);
-  Wire.begin();
+  Wire.begin(D1, D2);
     /*
     BH1750 has six different measurement modes. They are divided in two groups;
     continuous and one-time measurements. In continuous mode, sensor continuously
