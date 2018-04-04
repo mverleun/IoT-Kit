@@ -1,5 +1,8 @@
 
-
+/*
+  04-04-2018   1.1.0 Implemented JSON output
+  03-04-2018   1.0.0 Initial version
+*/
 #include <Homie.h>
 
 
@@ -35,6 +38,10 @@ current_distance = duration/58.2;
   if ( current_distance != previous_distance ) {
     Homie.getLogger() << "Distance: " << current_distance << " cm" << endl;
     distanceNode.setProperty("distance").send(String(current_distance));
+    distanceNode.setProperty("json").send("{ \"name\": \"" + String(Homie.getConfiguration().name) + "\""+
+                                            ", \"metric\": \"distance\"" +
+                                            ", \"value\": " + String(current_distance) +
+                                            " }");
     previous_distance = current_distance;
   }
   // Delay between measurements.
@@ -88,7 +95,7 @@ void onHomieEvent(const HomieEvent& event) {
 void setup() {
   Serial.begin(115200);
   Serial << endl << endl;
-  Homie_setFirmware("wemos-d1-hc-sr04", "1.0.0");
+  Homie_setFirmware("wemos-d1-hc-sr04", "1.1.0");
   Homie.setSetupFunction(setupHandler).setLoopFunction(loopHandler);
 
   distanceNode.advertise("unit");
