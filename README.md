@@ -17,10 +17,11 @@ Also their source code has grown over time, making it less easy to study it in a
 
 For consistancy there is a great framework developped by Marvin Roger called Homie.
 This framework is the base for dedicated firmwares with consistent use of topics and standarized 
-ways to report data.
+ways to report data. The project can be found here: http://marvinroger.github.io/homie-esp8266/
 
 The other advantage of using this framework is that it's easy to reflash the controllers 
-OTA using Homie-OTA which is developped by JP Mensch.
+OTA using Homie-OTA which is developped by JP Mens, check out https://github.com/jpmens/homie-ota
+Homie-OTA can be run from Docker making it easy to deploy.
 
 When combining these two excellent projects it became easy to develop dedicated firmware
 with easy to understand source code.
