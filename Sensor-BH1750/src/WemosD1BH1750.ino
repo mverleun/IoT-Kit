@@ -1,4 +1,8 @@
-
+/*
+  25-04-2018   1.2.0 Implemented boolean value to represent dusk status
+  04-04-2018   1.1.0 Implemented JSON output
+  03-04-2018   1.0.0 Initial version
+*/
 
 #include <Homie.h>
 
@@ -34,6 +38,11 @@ BH1750 lightMeter(0x23);
 float current_lux;
 float previous_lux = 0.0;
 
+bool dusk = false;
+unsigned long dusk_value = 45;        // Level from sensor
+unsigned long minInterval = 1 * 60;   // Minimum interval between status changes dusk
+unsigned long previousUpdate = 0L;
+
 HomieNode lightNode("light", "light");
 
 void setupHandler() {
@@ -42,12 +51,34 @@ void setupHandler() {
 
 void loopHandler() {
   uint16_t current_lux = lightMeter.readLightLevel();
+  unsigned long now = millis();
 
   // Only publish info if there is a change in Temperature
   if ( current_lux != previous_lux ) {
     Homie.getLogger() << "Light: " << current_lux << " lux" << endl;
-    lightNode.setProperty("lux").send(String(current_lux));
+    lightNode.setProperty("light").send(String(current_lux));
+    lightNode.setProperty("json").send("{ \"name\": \"" + String(Homie.getConfiguration().name) + "\""+
+                                            ", \"metric\": \"light\"" +
+                                            ", \"value\": " + String(current_lux) +
+                                            " }");
     previous_lux = current_lux;
+  }
+
+  // Check if the previous update of the dusk status was some Time
+  // ago to avoid flipflopping.
+  if (now - previousUpdate > minInterval * 1000L) {
+    // Are we above dusk level but still in dusk states?
+    if (current_lux > dusk_value and dusk == true) {
+      Homie.getLogger() << "Dusk: Changing to false";
+      lightNode.setProperty("dusk").send("0");
+      previousUpdate = now;
+    }
+    // Are we below dusk level and not in dusk status?
+    if (current_lux < dusk_value and dusk == false) {
+      Homie.getLogger() << "Dusk: Changing to true";
+      lightNode.setProperty("dusk").send("1");
+      previousUpdate = now;
+    }
   }
   // Delay between measurements.
   delay(1000);
@@ -100,7 +131,7 @@ void onHomieEvent(const HomieEvent& event) {
 void setup() {
   Serial.begin(115200);
   Serial << endl << endl;
-  Homie_setFirmware("wemos-d1-bh1750", "1.0.0");
+  Homie_setFirmware("wemos-d1-bh1750", "1.0.1");
   Homie.setSetupFunction(setupHandler).setLoopFunction(loopHandler);
 
   lightNode.advertise("unit");
