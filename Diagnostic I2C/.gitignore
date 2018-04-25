@@ -1,9 +1,5 @@
-.DS_Store
 .pioenvs
 .piolibdeps
 .clang_complete
 .gcc-flags.json
-*.log
-.DS_Store
-*.cpp
-.DS_Store
+config.json
