@@ -83,3 +83,5 @@ Everything inside the 'data' directory can be uploaded into the SPIFFS filesyste
 Next build the firmware and upload it the usual way to get a 'homie' firmware on your device.
 
 Once the device contains 'homie' firmware you can reflash the device OTA. Upload the next build of your firmware to the 'homie-ota' server, select the device that you want to flash and proceed.
+
+Check the documentation for the mentioned projects for details.
