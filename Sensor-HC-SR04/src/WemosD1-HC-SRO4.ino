@@ -15,6 +15,8 @@ float current_distance;
 float previous_distance = 0.0;
 long duration;
 
+int  measurement_counter = 0;
+
 HomieNode distanceNode("distance", "distance");
 
 void setupHandler() {
@@ -24,28 +26,37 @@ void setupHandler() {
 void loopHandler() {
   /* The following TRIGGER/ECHO cycle is used to determine the
 distance of the nearest object by bouncing soundwaves off of it. */
-noInterrupts();
+noInterrupts(); //Avoid interrupts
+
 digitalWrite(TRIGGER, LOW);
 delayMicroseconds(2);
 digitalWrite(TRIGGER, HIGH);
 delayMicroseconds(10);
 digitalWrite(TRIGGER, LOW);
 duration = pulseIn(ECHO, HIGH);
-interrupts();
+interrupts(); // Enable interrupts
+
 //Calculate the distance (in cm) based on the speed of sound.
 current_distance = duration/58.2;
-  // Only publish info if there is a change in distance
-  if ( current_distance != previous_distance ) {
+  // Only publish info if there is a change in distance and if a couple of measurements are close
+  if ( abs(current_distance - previous_distance) < 5 ) {
+    measurement_counter += 1;
+  } else {
+    measurement_counter = 0;
+  }
+  previous_distance = current_distance;
+
+  if (measurement_counter > 3 ) {
     Homie.getLogger() << "Distance: " << current_distance << " cm" << endl;
     distanceNode.setProperty("distance").send(String(current_distance));
     distanceNode.setProperty("json").send("{ \"name\": \"" + String(Homie.getConfiguration().name) + "\""+
                                             ", \"metric\": \"distance\"" +
                                             ", \"value\": " + String(current_distance) +
                                             " }");
-    previous_distance = current_distance;
-  }
-  // Delay between measurements.
-  delay(1000);
+
+    }
+    // Delay between measurements.
+    delay(1000);
 }
 
 void onHomieEvent(const HomieEvent& event) {
@@ -103,6 +114,7 @@ void setup() {
 
   Homie.setup();
 
+  // Set the GPIO pins correctly
   pinMode(TRIGGER, OUTPUT);
   pinMode(ECHO, INPUT);
 }

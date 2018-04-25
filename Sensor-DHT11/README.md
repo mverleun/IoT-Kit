@@ -1,31 +1,58 @@
-# Sensor DHT11
+# Sensor Wemos D1 mini with DHT11
 
 This firmware is meant to be used on a Wemos D1.
-It has the ui_bundle embedded to allow for easy config.
+It is based on the homie platform developed by Marvin Roger.
+The original documentation can be found here: http://marvinroger.github.io/homie-esp8266/
 
-It serves as a sensor that reports temperature and humidity via MQTT.
+This node serves as a sensor that reports distance via MQTT. The sensor used is a DHT11.
 
-Upload /data contents first: pio run -t uploadfs
-Then upload firmware: pio run -t upload
+## Connecting the hardware
+Connect the hardware as follows:
+```
+DHT11  Wemos D1 mini
+VCC ----- +3.3V
+GND ----- GND
+SIG ----- D4
+```
+## Compiling and uploading
+This firmware embeds the ui_bundle to make the initial configuration easier.
+In order to upload it into the SPIFFS filesystem you have to build the firmware first and then open up a terminal.
 
-To change the config publish to topic: homie/<device-id>/$implementation/config/set
+In the terminal enter the command `pio run -t uploadfs` to upload the contents of the /data directory.
+Once the upload has completed upload the firmware as usual or type the command `pio run -t upload`.
 
-Incremental OTA changes for homie-ota.
+It is also possible to include a file `config.json` in the directorie /data/homie with preconfigured settings before you upload the files to SPIFFS e.g.:
+```
 {
-  "name": "Sensor x",
-  "device_id": "wemos-x",
-  "mqtt": {
-    "host": "192.168.xx.xx",
-    "base_topic": "devices/",
-    "auth": true,
-    "username": "user",
-    "password": "pass",
+  "wifi":{
+    "ssid":"<SSID>",
+    "password": "<PASSWWORD>"
+    },
+  "mqtt":{
+    "host":"mqtt.example.com",
+    "port":1883,
+    "base_topic":"devices/",
+    "username": "<mqtt username>",
+    "password": "<mqtt password>",
+    "auth":true
   },
-  "ota": {
-    "enabled": true,
-    "host": "192.168.xx.xx",
-    "port": 9080,
-    "path": "/ota",
-    "ssl": false
-  }
+  "name":"Sensor X",
+  "ota":{
+    "enabled":true
+    },
+  "device_id":"wemos-x"
 }
+```
+For MQTT you can ommit `username`, `password` and `auth` if your MQTT server doesn't requite authentication.
+
+If you ommit `base_topic` it will default to the value "homie"
+
+##MQTT
+If all is configured well you should receive measurements on the following topics:
+```
+<base_topic>/<device_id>/temperature/temperature
+<base_topic>/<device_id>/humidity/humidity
+<base_topic>/<device_id>/temperature/json
+<base_topic>/<device_id>/humidity/json
+```
+The json output contains the name of the sensor, the name of the metric reported and the value of the measurement.

@@ -1,5 +1,5 @@
 /*
-
+ 1.0.2    02-04-2018  Removed UI to reduce SPIFFS size
  1.0.1    02-04-2018  Updated Libraries, added code from example
  1.0.0    25-03-2018  Initial version
 */
@@ -109,7 +109,7 @@ void setup() {
   pinMode(PIN_BUTTON, INPUT);
   digitalWrite(PIN_RELAY, LOW);
 
-  Homie_setFirmware("sonoff-s20", "1.0.1");
+  Homie_setFirmware("sonoff-s20", "1.0.2");
 
   Homie.setLedPin(PIN_LED, LOW).setResetTrigger(PIN_BUTTON, LOW, 5000);
 

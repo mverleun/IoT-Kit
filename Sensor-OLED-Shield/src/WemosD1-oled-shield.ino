@@ -26,6 +26,18 @@ void setupHandler() {
 }
 
 void loopHandler() {
+  Serial << "loopHandler" << endl;
+  delay(2000);
+
+  // Clear the buffer.
+  display.clearDisplay();
+  //display.setTextWrap(false);
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
+  display.println("Hello World");
+  display.display();
+  //display.startscrollleft(0x00, 0x0F); //make display scroll
 
 }
 
@@ -83,17 +95,7 @@ void setup() {
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3D
   display.display();
 
-  delay(2000);
-  // Clear the buffer.
-  display.clearDisplay();
 
-  display.setTextWrap(false);
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0,0);
-  display.println("Hello World");
-  display.display();
-  display.startscrollleft(0x00, 0x0F); //make display scroll
 
   Homie.setSetupFunction(setupHandler).setLoopFunction(loopHandler);
 

@@ -1,21 +1,22 @@
-
-// 1.0.1  02-04-2018 Updated Libraries, added ui in /data
-// 1.0.0  25-03-2018 Initial version
-#include <Arduino.h>
+/*
+1.1.0  04-04-2018 Added JSON output
+1.0.2  02-04-2018 Simplified code
+1.0.1  02-04-2018 Updated Libraries, added ui in /data
+1.0.0  25-03-2018 Initial version
+*/
 #include <Homie.h>
 
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
-#include <DHT_U.h>
 
-#define DHTPIN            2 // D4        // Pin which is connected to the DHT sensor.
+#define DHTPIN            D4 // Pin which is connected to the DHT sensor.
 
 // Uncomment the type of sensor in use:
 #define DHTTYPE           DHT11     // DHT 11
 //#define DHTTYPE           DHT22     // DHT 22 (AM2302)
 //#define DHTTYPE           DHT21     // DHT 21 (AM2301)
 
-DHT_Unified dht(DHTPIN, DHTTYPE);
+DHT dht(DHTPIN, DHTTYPE);
 
 uint32_t delayMS;  // Store the minimum wait time between readings
 
@@ -24,11 +25,12 @@ float previous_temperature = 0.0;
 float current_humidity;
 float previous_humidity = 0.0;
 
-HomieNode temperatureNode("environment", "temperature");
+HomieNode temperatureNode("temperature", "temperature");
+HomieNode humidityNode("humidity", "humidity");
 
 void setupHandler() {
-  temperatureNode.setProperty("temperature_unit").send("c");
-  temperatureNode.setProperty("humidity_unit").send("%");
+  temperatureNode.setProperty("unit").send("c");
+  humidityNode.setProperty("unit").send("%");
 }
 
 bool broadcastHandler(const String& level, const String& value) {
@@ -40,31 +42,40 @@ void loopHandler() {
   // Delay between measurements.
   delay(delayMS);
   // Get temperature event and publish its value.
-  sensors_event_t event;
-  dht.temperature().getEvent(&event);
-  if (isnan(event.temperature)) {
+
+  float temperature = dht.readTemperature();
+  float humidity = dht.readHumidity();
+
+  if (isnan(temperature)) {
     Serial.println("Error reading temperature!");
   }
   else {
-    current_temperature = event.temperature;
+    current_temperature = temperature;
     // Only publish info if there is a change in Temperature
     if ( current_temperature != previous_temperature ) {
       Homie.getLogger() << "Temperature: " << current_temperature << " °C" << endl;
       temperatureNode.setProperty("temperature").send(String(current_temperature));
+      temperatureNode.setProperty("json").send("{ \"name\": \"" + String(Homie.getConfiguration().name) + "\""+
+                                              ", \"metric\": \"temperature\"" +
+                                              ", \"value\": " + String(current_temperature) +
+                                              " }");
       previous_temperature = current_temperature;
     }
   }
-  // Get humidity event and publish its value.
-  dht.humidity().getEvent(&event);
-  if (isnan(event.relative_humidity)) {
+
+  if (isnan(humidity)) {
     Serial.println("Error reading humidity!");
   }
   else {
-    current_humidity = event.relative_humidity;
+    current_humidity = humidity;
     // Only publish info if there is a change in Humidity
     if ( current_humidity != previous_humidity ) {
       Homie.getLogger() << "Humidity: " << current_humidity << " %" << endl;
-      temperatureNode.setProperty("humidity").send(String(current_humidity));
+      humidityNode.setProperty("humidity").send(String(current_humidity));
+      temperatureNode.setProperty("json").send("{ \"name\": \"" + String(Homie.getConfiguration().name) + "\""+
+                                              ", \"metric\": \"humidity\"" +
+                                              ", \"value\": " + String(current_humidity) +
+                                              " }");
       previous_humidity = current_humidity;
     }
   }
@@ -120,21 +131,17 @@ void onHomieEvent(const HomieEvent& event) {
 void setup() {
   Serial.begin(115200);
   Serial << endl << endl;
-  Homie_setBrand("MarCoach-IoT"); // before Homie.setup()
-  Homie_setFirmware("wemos-d1-dht11", "1.0.1");
+  Homie_setFirmware("wemos-d1-dht11", "1.0.2");
   Homie.setSetupFunction(setupHandler).setLoopFunction(loopHandler);
   Homie.setBroadcastHandler(broadcastHandler); // before Homie.setup()
   temperatureNode.advertise("temperature_unit");
-  temperatureNode.advertise("humidity_unit");
+  humidityNode.advertise("humidity_unit");
 
   Homie.setup();
 
   // Initialize device.
   dht.begin();
 
-  sensor_t sensor;
-  dht.humidity().getSensor(&sensor);
-  // Set delay between sensor readings based on sensor details.
   delayMS = 5000;
 }
 

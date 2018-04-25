@@ -3,83 +3,35 @@
 */
 
 #include <Homie.h>
-#include "WEMOS_Motor.h"
+#include "Grove_I2C_Motor_Driver.h"
+#include <Wire.h>
 
-
-int pwm;
-/*
-VM: Motor power supply + (Max 15Vdc) (2 Pins)
-GND: Motor power supply - (2 Pins)
-A1 A2: Motor A
-B1 B2: Motor B
-S: Standby control port (in IO mode)
-Stanby control mode
-I2C mode: Control TB6612’s STBY with I2C protocol
-IO mode: Control TB6612’s STBY with “S” pin
-Shield reset mode
-short: reset with d1 mini (reset at power on or press d1 mini’s reset button)
-open: reset by “DTR” pin.
-
-I2C address
-
-AD1	AD0	Address
--	  -	  0x2D
--	  x	  0x2E
-x	  -	  0X2F
-x	  x	  0x30(default)
-x = open
-- = short
-
-SCL = D1
-SDA = D2
-*/
-
-
-//Motor shiled I2C Address: 0x30
-//PWM frequency: 1000Hz(1kHz)
-Motor M1(0x30,_MOTOR_A, 1000);//Motor A
-Motor M2(0x30,_MOTOR_B, 1000);//Motor B
+// default I2C address is 0x0f
+#define I2C_ADDRESS 0x0f
 
 HomieNode motorNode("motor", "motor");
 
 void setupHandler() {
+  Serial.println("Entering setupHandler");
+  Motor.begin(I2C_ADDRESS); // join i2c bus (address optional for master)
 }
 
 void loopHandler() {
-  for (pwm = 0; pwm <= 100; pwm++)
-  {
-    M1.setmotor( _CW, pwm);
-    M2.setmotor(_CW, 100-pwm);
-    Serial.printf("A:%d%, B:%d%, DIR:CW\r\n", pwm,100-pwm);
-  }
-
-  M1.setmotor(_STOP);
-  M2.setmotor( _STOP);
-  Serial.println("Motor A&B STOP");
-  delay(200);
-
-  for (pwm = 0; pwm <=100; pwm++)
-  {
-    M1.setmotor(_CCW, pwm);
-    M2.setmotor(_CCW, 100-pwm);
-    Serial.printf("A:%d%, B:%d%, DIR:CCW\r\n", pwm,100-pwm);
-
-  }
-
-  M1.setmotor(_STOP);
-  M2.setmotor( _STOP);
-  delay(200);
-  Serial.println("Motor A&B STOP");
-
-  M1.setmotor(_SHORT_BRAKE);
-  M2.setmotor( _SHORT_BRAKE);
-  Serial.println("Motor A&B SHORT BRAKE");
-  delay(1000);
-
-  M1.setmotor(_STANDBY);//Both Motor standby
-  //M2.setmotor( _STANDBY);
-  Serial.println("Motor A&B STANDBY");
-  delay(1000);
+  Serial.println("Entering loopHandler");
+  // Set speed of MOTOR1, Clockwise, speed: -100~100
+  Motor.speed(MOTOR1, 50);
+  // Set speed of MOTOR2, Anticlockwise
+  Motor.speed(MOTOR2, -70);
+  delay(2000);
+  // Change speed and direction of MOTOR1
+  Motor.speed(MOTOR1, -100);
+  // Change speed and direction of MOTOR2
+  Motor.speed(MOTOR2, 100);
+  delay(2000);
+  // Stop MOTOR1 and MOTOR2
+  Motor.stop(MOTOR1);
+  Motor.stop(MOTOR2);
+  delay(2000);
 }
 
 void onHomieEvent(const HomieEvent& event) {
@@ -134,8 +86,6 @@ void setup() {
 
 
   Homie.setup();
-
-  Wire.begin(D1, D2);
 
 }
 
