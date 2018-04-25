@@ -131,7 +131,11 @@ void onHomieEvent(const HomieEvent& event) {
 void setup() {
   Serial.begin(115200);
   Serial << endl << endl;
+<<<<<<< HEAD
   Homie_setFirmware("wemos-d1-bh1750", "1.0.2");
+=======
+  Homie_setFirmware("wemos-d1-bh1750", "1.0.q");
+>>>>>>> 6c1e7a8b6fb8f240b0ee71a12ffc14f5ee1b292c
   Homie.setSetupFunction(setupHandler).setLoopFunction(loopHandler);
 
   lightNode.advertise("unit");
