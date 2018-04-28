@@ -9,7 +9,7 @@ This node serves as a sensor that reports distance via MQTT. The sensor used is 
 ## Connecting the hardware
 Connect the hardware as follows:
 ```
-BH-1750  Wemos D1 mini
+BH-1750   Wemos D1 mini
 VCC ----- +3.3V
 GND ----- GND
 SCL ----- D1
