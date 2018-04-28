@@ -5,7 +5,7 @@ Homie OTA presents a general overview of all the devices:
 ![Homie devices](Images/Homie_devices.png)
 
 When clicking on a device detailed information is shown:
-![Homie device details](Images/Homie_device_-_wemos-4.png)<<<<<<< HEAD
+<<<<<<< HEAD
 ![Homie device details](Images/Homie_device_-_wemos-4.png)
 =======
 ![Homie device details](Images/Homie_device_-_wemos-4.png)
