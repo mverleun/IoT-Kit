@@ -12,6 +12,8 @@ So no breadboards with loose or misplaced wires and sensors, but a robust collec
 
 An aspect often overlooked is the ability to update IoT devices remotely, sometimes in great quantities.
 
+The ESP8266 is a great controller for these kind of devices. It's cheap, has WiFi connectivity and there are many shields available with sensors.
+
 The [homie convention](https://github.com/homieiot/convention) establishes a standard for IoT devices and is rapidly adopted as such. It also allows to update many devices at once for ESP8266 based devices. (If there is enough storage available).
 
 The homie convention is available for ESP8266 based devices, but also as a Python framework. It avoids a lot of coding which results in clean firmwares that are easy to understand, even for novice students whilest meeting the earlier mentioned requirments.
