@@ -7,6 +7,8 @@ Teaching IoT is more than doing some programming in Python or C(++) to read sens
 It's about sensors, microcontrollers, information storage, etc. It's also about connectivity, bluetooth, wifi, LoraWan and more. Roughly we identify 7 areas:
 ![IoT Components](https://raw.githubusercontent.com/mverleun/IoT-devices/master/Documentation/Images/IoT_Components.png)
 
+Often devices cover multiple areas, the above image is meant to show the diversity of skills required to master IoT accross the board.
+
 When working with novice students who who are not fully skilled it's important to make IoT easy accessible.
 
 So no breadboards with loose or misplaced wires and sensors, but a robust collection of controllers, with shield, that are affordable hardware and interchangable.
@@ -23,5 +25,9 @@ The homie convention is available for ESP8266 based devices, but also as a Pytho
 ## Wemos D1 Mini
 Most of the firmwares are designed for the Wemos D1 Mini. The Wemos D1 Mini devices are easy to flash because they already have a micro USB connector on board. They also have enough storage to allow OTA updates. Their low price is an advantage as well as the ability to change the shields.
 
-## Shields
 There are many shields available for the Wemos D1 Mini. But DIY is also possible and not hard to do. 
+Depending on the type of sensor or actuator 3 to 4 connections are required to connect it to the device.
+
+## Python based homie
+A python based example is also provided. The example simply sends keypresses from the keyboard to a MQTT topic, use it as a kind of remote control.
+

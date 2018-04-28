@@ -7,5 +7,5 @@
     "CA_CERTS": "",
     "DEVICE_ID": "<device-id>",
     "DEVICE_NAME": "<device-name>",
-    "TOPIC": "devices"
+    "TOPIC": "devices/"
 }
