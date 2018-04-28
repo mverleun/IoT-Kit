@@ -4,12 +4,12 @@ universal firmwares that can do multiple things. Even though they're not difficu
 they all have their own mqtt topics, data formats und update procedures making them less intuitive.
 Also their source code has grown over time, making it less easy to study it in a short time.
 
-## Multiple firmwares
+##Multiple firmwares
 Instead of creating a great universal firmware that supports a multitude of shields this project consists of dedicated firmwares for a specific task.
 
 If new shields are added it is easy to create the firmware because of the homie framework.
 
-## Initital configuration of the firmware
+##Initital configuration of the firmware
 When the device has enough storage capacity the configuration can be done easilty through a web browser. Each freshly flashed device will start as an accesspoint where you can connect to. 
 Simply fill in the required information and the device is ready for use.
 
