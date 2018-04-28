@@ -25,6 +25,7 @@ The homie convention is available for ESP8266 based devices, but also as a Pytho
 ## Wemos D1 Mini
 Most of the firmwares are designed for the Wemos D1 Mini. The Wemos D1 Mini devices are easy to flash because they already have a micro USB connector on board. They also have enough storage to allow OTA updates. Their low price is an advantage as well as the ability to change the shields.
 
+### Shields
 There are many shields available for the Wemos D1 Mini. But DIY is also possible and not hard to do. 
 Depending on the type of sensor or actuator 3 to 4 connections are required to connect it to the device.
 
