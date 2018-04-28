@@ -25,12 +25,20 @@ float previous_temperature = 0.0;
 float current_humidity;
 float previous_humidity = 0.0;
 
+// The DHT-11 sensor provides two different readings.
+// As such we can create two different nodes. One for temperature and one for humidiy
 HomieNode temperatureNode("temperature", "temperature");
 HomieNode humidityNode("humidity", "humidity");
+
 
 void setupHandler() {
   temperatureNode.setProperty("unit").send("c");
   humidityNode.setProperty("unit").send("%");
+  
+  // Initialize device.
+  dht.begin();
+
+  delayMS = 5000;
 }
 
 bool broadcastHandler(const String& level, const String& value) {
@@ -54,7 +62,9 @@ void loopHandler() {
     // Only publish info if there is a change in Temperature
     if ( current_temperature != previous_temperature ) {
       Homie.getLogger() << "Temperature: " << current_temperature << " °C" << endl;
+      // Publish value as float
       temperatureNode.setProperty("temperature").send(String(current_temperature));
+      // Publish data in JSON format
       temperatureNode.setProperty("json").send("{ \"name\": \"" + String(Homie.getConfiguration().name) + "\""+
                                               ", \"metric\": \"temperature\"" +
                                               ", \"value\": " + String(current_temperature) +
@@ -81,53 +91,6 @@ void loopHandler() {
   }
 }
 
-void onHomieEvent(const HomieEvent& event) {
-  switch (event.type) {
-    case HomieEventType::STANDALONE_MODE:
-      Serial << "Standalone mode started" << endl;
-      break;
-    case HomieEventType::CONFIGURATION_MODE:
-      Serial << "Configuration mode started" << endl;
-      break;
-    case HomieEventType::NORMAL_MODE:
-      Serial << "Normal mode started" << endl;
-      break;
-    case HomieEventType::OTA_STARTED:
-      Serial << "OTA started" << endl;
-      break;
-    case HomieEventType::OTA_PROGRESS:
-      Serial << "OTA progress, " << event.sizeDone << "/" << event.sizeTotal << endl;
-      break;
-    case HomieEventType::OTA_FAILED:
-      Serial << "OTA failed" << endl;
-      break;
-    case HomieEventType::OTA_SUCCESSFUL:
-      Serial << "OTA successful" << endl;
-      break;
-    case HomieEventType::ABOUT_TO_RESET:
-      Serial << "About to reset" << endl;
-      break;
-    case HomieEventType::WIFI_CONNECTED:
-      Serial << "Wi-Fi connected, IP: " << event.ip << ", gateway: " << event.gateway << ", mask: " << event.mask << endl;
-      break;
-    case HomieEventType::WIFI_DISCONNECTED:
-      Serial << "Wi-Fi disconnected, reason: " << (int8_t)event.wifiReason << endl;
-      break;
-    case HomieEventType::MQTT_READY:
-      Serial << "MQTT connected" << endl;
-      break;
-    case HomieEventType::MQTT_DISCONNECTED:
-      Serial << "MQTT disconnected, reason: " << (int8_t)event.mqttReason << endl;
-      break;
-    case HomieEventType::MQTT_PACKET_ACKNOWLEDGED:
-      Serial << "MQTT packet acknowledged, packetId: " << event.packetId << endl;
-      break;
-    case HomieEventType::READY_TO_SLEEP:
-      Serial << "Ready to sleep" << endl;
-      break;
-  }
-}
-
 void setup() {
   Serial.begin(115200);
   Serial << endl << endl;
@@ -138,11 +101,6 @@ void setup() {
   humidityNode.advertise("humidity_unit");
 
   Homie.setup();
-
-  // Initialize device.
-  dht.begin();
-
-  delayMS = 5000;
 }
 
 void loop() {
