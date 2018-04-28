@@ -1,5 +1,6 @@
 /*
-  25-04-2018   1.0.0 Initial version
+  28-04-2018:  1.0.1 Improved with code from https://github.com/jainrk/i2c_port_address_scanner.git
+  25-04-2018:   1.0.0 Initial version
 */
 
 #include <Homie.h>
@@ -16,6 +17,9 @@ of an attached I2C devices
 
 
 HomieNode diagNode("diag", "diag");
+uint8_t portArray[] = {16, 5, 4, 0, 2, 14, 12, 13};
+//String portMap[] = {"D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7"}; //for Wemos
+String portMap[] = {"GPIO16", "GPIO5", "GPIO4", "GPIO0", "GPIO2", "GPIO14", "GPIO12", "GPIO13"};
 
 void setupHandler() {
   // Initialize the I2C bus
@@ -24,94 +28,60 @@ void setupHandler() {
   diagNode.setProperty("address").send("");
 }
 
-void loopHandler() {
+void scanPorts() {
+  for (uint8_t i = 0; i < sizeof(portArray); i++) {
+    for (uint8_t j = 0; j < sizeof(portArray); j++) {
+      if (i != j){
+        Wire.begin(portArray[i], portArray[j]);
+        check_if_exist_I2C(i, j);
+      }
+    }
+  }
+}
+
+void check_if_exist_I2C(uint8_t i, uint8_t j) {
   byte error, address;
   int nDevices;
-
-  Serial.println("Scanning...");
-
   nDevices = 0;
-  for (address = 1; address < 127; address++)
-  {
-    // The i2c scanner uses the return value of
+  for (address = 1; address < 127; address++ )  {
+    // The i2c_scanner uses the return value of
     // the Write.endTransmisstion to see if
     // a device did acknowledge to the address.
     Wire.beginTransmission(address);
     error = Wire.endTransmission();
 
-    if (error == 0)
-    {
+    if (error == 0){
+      Serial.print("Scanning (SDA : SCL) - " + portMap[i] + " : " + portMap[j] + " - ");
       Serial.print("I2C device found at address 0x");
-      if (address < 16) {
+      if (address < 16)
         Serial.print("0");
-      }
       Serial.print(address, HEX);
-      Serial.println(" !");
-      diagNode.setProperty("address").send(String(address));
+      Serial.println("  !");
+
       nDevices++;
-    }
-    else if (error == 4)
-    {
-      Serial.print("Unknown error at address 0x");
-      if (address < 16) {
+    } else if (error == 4) {
+      Serial.print("Unknow error at address 0x");
+      if (address < 16)
         Serial.print("0");
-      }
       Serial.println(address, HEX);
     }
-  }
-  if (nDevices == 0) {
-    Serial.println("No I2C devices found\n");
-  }
-  else {
-    Serial.println("Done.\n");
-  }
+  } //for loop
+/*
+  if (nDevices == 0)
+    Serial.println("No I2C devices found");
+  else
+    Serial.println("**********************************\n");
+*/
+  //delay(1000);           // wait 1 seconds for next scan, did not find it necessary
+}
 
+void loopHandler() {
+  Serial.println("\n\nI2C Scanner to scan for devices on each port pair D0 to D7");
+  scanPorts();
   delay(2000);
 }
 
-void onHomieEvent(const HomieEvent& event) {
-  switch (event.type) {
-    case HomieEventType::STANDALONE_MODE:
-      Serial << "Standalone mode started" << endl;
-      break;
-    case HomieEventType::CONFIGURATION_MODE:
-      Serial << "Configuration mode started" << endl;
-      break;
-    case HomieEventType::NORMAL_MODE:
-      Serial << "Normal mode started" << endl;
-      break;
-    case HomieEventType::OTA_STARTED:
-      Serial << "OTA started" << endl;
-      break;
-    case HomieEventType::OTA_FAILED:
-      Serial << "OTA failed" << endl;
-      break;
-    case HomieEventType::OTA_SUCCESSFUL:
-      Serial << "OTA successful" << endl;
-      break;
-    case HomieEventType::ABOUT_TO_RESET:
-      Serial << "About to reset" << endl;
-      break;
-    case HomieEventType::WIFI_CONNECTED:
-      Serial << "Wi-Fi connected, IP: " << event.ip << ", gateway: " << event.gateway << ", mask: " << event.mask << endl;
-      break;
-    case HomieEventType::WIFI_DISCONNECTED:
-      Serial << "Wi-Fi disconnected, reason: " << (int8_t)event.wifiReason << endl;
-      break;
-    case HomieEventType::MQTT_READY:
-      Serial << "MQTT connected" << endl;
-      break;
-    case HomieEventType::MQTT_DISCONNECTED:
-      Serial << "MQTT disconnected, reason: " << (int8_t)event.mqttReason << endl;
-      break;
-    case HomieEventType::MQTT_PACKET_ACKNOWLEDGED:
-      Serial << "MQTT packet acknowledged, packetId: " << event.packetId << endl;
-      break;
-    case HomieEventType::READY_TO_SLEEP:
-      Serial << "Ready to sleep" << endl;
-      break;
-  }
-}
+
 
 void setup() {
   Serial.begin(115200);
