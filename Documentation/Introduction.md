@@ -4,7 +4,8 @@ In education you want focus on learning objectivs and not be distracted by avoid
 It's about the **big picture** where a lot of skills are required. 
 
 Teaching IoT is more than doing some programming in Python or C(++) to read sensor values or turn a LED on.
-It's about sensors, microcontrollers, information storage, etc. It's also about connectivity, bluetooth, wifi, LoraWan and more.
+It's about sensors, microcontrollers, information storage, etc. It's also about connectivity, bluetooth, wifi, LoraWan and more. Roughly we identify 7 areas:
+![IoT Components](https://raw.githubusercontent.com/mverleun/IoT-devices/master/Documentation/Images/IoT_Components.png)
 
 When working with novice students who who are not fully skilled it's important to make IoT easy accessible.
 
@@ -12,8 +13,15 @@ So no breadboards with loose or misplaced wires and sensors, but a robust collec
 
 An aspect often overlooked is the ability to update IoT devices remotely, sometimes in great quantities.
 
+## ESP8266
 The ESP8266 is a great controller for these kind of devices. It's cheap, has WiFi connectivity and there are many shields available with sensors.
 
 The [homie convention](https://github.com/homieiot/convention) establishes a standard for IoT devices and is rapidly adopted as such. It also allows to update many devices at once for ESP8266 based devices. (If there is enough storage available).
 
 The homie convention is available for ESP8266 based devices, but also as a Python framework. It avoids a lot of coding which results in clean firmwares that are easy to understand, even for novice students whilest meeting the earlier mentioned requirments.
+
+## Wemos D1 Mini
+Most of the firmwares are designed for the Wemos D1 Mini. The Wemos D1 Mini devices are easy to flash because they already have a micro USB connector on board. They also have enough storage to allow OTA updates. Their low price is an advantage as well as the ability to change the shields.
+
+## Shields
+There are many shields available for the Wemos D1 Mini. But DIY is also possible and not hard to do. 
