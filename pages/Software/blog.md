@@ -1,3 +1,7 @@
+---
+published: true
+---
+
 # Software components
 
 ## Homie
