@@ -25,4 +25,4 @@ If all is configured well you should receive measurements on the following topic
 ```
 
 Temperature and humidity are reported as floating point values.
-The json output contains the name of the sensor, the name of the metric reported and the value of the measurement.
+The JSON output contains the name of the sensor, the name of the metric reported and the value of the measurement.
