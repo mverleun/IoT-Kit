@@ -1,0 +1,11 @@
+{
+    "HOST": "mqtt.example.com",
+    "PORT": 1883,
+    "KEEPALIVE": 10,
+    "USERNAME": "",
+    "PASSWORD": "",
+    "CA_CERTS": "",
+    "DEVICE_ID": "<device-id>",
+    "DEVICE_NAME": "<device-name>",
+    "TOPIC": "devices/"
+}
