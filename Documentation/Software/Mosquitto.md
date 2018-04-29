@@ -1,6 +1,8 @@
 # Mosquitto  
 [Mosquitto](https://mosquitto.org) is a MQTT server and the connecting element between the devices and the management server.
 
+If you are not familiar with the MQTT protocol check out the following brief description: [https://mosquitto.org/man/mqtt-7.html](https://mosquitto.org/man/mqtt-7.html)
+
 ## homie topics
 The devices subscribe to topics on this server as specified in the homie convention.
 The also periodically publish information to topics.
@@ -23,6 +25,8 @@ To subscribe to all topics and subtopics of a device use `devices/<device-id>/#`
 Below is an example of the configuration that can be used with the IoT Kit devices. 
 This configuration is used with mosquitto running in a docker container.
 If you're not running from a docker container you might want to change the config.
+
+A detailed explanation can be found here: [https://mosquitto.org/man/mosquitto-conf-5.html](https://mosquitto.org/man/mosquitto-conf-5.html)
 
 ```
 listener 1883
