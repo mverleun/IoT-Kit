@@ -77,5 +77,5 @@ In the logfile of mosquitto can check if a device is connected and to which topi
 1524913539: Homie-wemos-4 2 devices/$broadcast/+
 ```
 
-Another common mistake is with the name of topics and subtopics. The IoT Kit topics start with `device/`, that is without a `/` at the front.
+Another common mistake is with the name of topics and subtopics. The IoT Kit topics start with `devices/`, that is without a `/` at the front.
 
