@@ -1,3 +1,11 @@
+---
+title: ''
+media_order: ''
+body_classes: ''
+order_by: ''
+order_manual: ''
+---
+
 # IoT for education
 
 In education you want focus on learning objectivs and not be distracted by avoidable side effects.
