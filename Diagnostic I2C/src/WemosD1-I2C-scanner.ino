@@ -18,8 +18,8 @@ of an attached I2C devices
 
 HomieNode diagNode("diag", "diag");
 uint8_t portArray[] = {16, 5, 4, 0, 2, 14, 12, 13};
-//String portMap[] = {"D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7"}; //for Wemos
-String portMap[] = {"GPIO16", "GPIO5", "GPIO4", "GPIO0", "GPIO2", "GPIO14", "GPIO12", "GPIO13"};
+String portMap[] = {"D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7"}; //for Wemos
+//String portMap[] = {"GPIO16", "GPIO5", "GPIO4", "GPIO0", "GPIO2", "GPIO14", "GPIO12", "GPIO13"};
 
 void setupHandler() {
   // Initialize the I2C bus
@@ -66,19 +66,17 @@ void check_if_exist_I2C(uint8_t i, uint8_t j) {
       Serial.println(address, HEX);
     }
   } //for loop
-/*
+
   if (nDevices == 0)
     Serial.println("No I2C devices found");
   else
     Serial.println("**********************************\n");
-*/
+
   //delay(1000);           // wait 1 seconds for next scan, did not find it necessary
 }
 
 void loopHandler() {
-  Serial.println("\n\nI2C Scanner to scan for devices on each port pair D0 to D7");
-  scanPorts();
-  delay(2000);
+
 }
 
 
@@ -91,7 +89,9 @@ void setup() {
 
 
   Homie.setup();
-
+  Serial.println("\n\nI2C Scanner to scan for devices on each port pair D0 to D7");
+  scanPorts();
+  delay(2000);
 
 }
 

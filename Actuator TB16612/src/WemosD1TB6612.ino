@@ -19,13 +19,18 @@ The wiki for this shield is found here: https://wiki.wemos.cc/products:d1_mini_s
 #define I2C_ADDRESS 0x30
 
 
-// SDA, SCL: D4, D5
+// Scanning (SDA : SCL) - D2 : D1 - I2C device found at address 0x30  !
 //Motor shiled I2C Address: 0x30
 //PWM frequency: 1000Hz(1kHz)
+
+
 Motor M1(I2C_ADDRESS, _MOTOR_A, 1000); // Motor A
 Motor M2(I2C_ADDRESS, _MOTOR_B, 1000); // Motor B
 
-int pwm = 0;
+float pwmMotor1 = 0;
+uint8_t directionMotor1 = _STANDBY;
+float pwmMotor2 = 0;
+uint8_t directionMotor2 = _STANDBY;
 
 HomieNode motor1Node("motor1", "motor");
 HomieNode motor2Node("motor2", "motor");
@@ -35,41 +40,60 @@ void setupHandler() {
 }
 
 bool pwm1Handler(HomieRange range, String value) {
-  pwm = value.toInt();
+  // devices/wemos-x/motor1/pwm/set
+  Serial << "Received PWM: " << String(value) << endl;
+  pwmMotor1 = value.toFloat();
+  M1.setmotor( directionMotor1, pwmMotor1);
   return true;
 }
 bool pwm2Handler(HomieRange range, String value) {
-  pwm = value.toInt();
+  // devices/wemos-x/motor2/pwm/set
+  Serial << "Received PWM: " << String(value) << endl;
+  pwmMotor2 = value.toFloat();
+  M2.setmotor( directionMotor2, pwmMotor2);
   return true;
 }
 
 bool motor1Handler(HomieRange range, String value) {
+  // devices/wemos-x/motor1/direction/set
+  Serial << "Received direction: " << String(value) << endl;
   if (value == "CW") {
-    M1.setmotor( _CW, pwm);
+    directionMotor1 = _CW;
   }
-  if (value == "CCw") {
-    M1.setmotor( _CCW, pwm);
+  if (value == "CCW") {
+    directionMotor1 = _CCW;
+  }
+  if (value == "STOP") {
+    directionMotor1 = _STOP;
   }
   if (value == "STANDBY") {
-    M1.setmotor( _STANDBY);
+    directionMotor1 = _STANDBY;
   }
+  M1.setmotor( directionMotor1, pwmMotor1);
   return true;
 }
 
 bool motor2Handler(HomieRange range, String value) {
+  // devices/wemos-x/motor2/direction/set
+  Serial << "Received direction: " << String(value) << endl;
   if (value == "CW") {
-    M1.setmotor( _CW, pwm);
+    directionMotor2 = _CW;
   }
-  if (value == "CCw") {
-    M1.setmotor( _CCW, pwm);
+  if (value == "CCW") {
+    directionMotor2 = _CCW;
+  }
+  if (value == "STOP") {
+    directionMotor2 = _STOP;
   }
   if (value == "STANDBY") {
-    M1.setmotor( _STANDBY);
+    directionMotor2 = _STANDBY;
   }
+  M1.setmotor( directionMotor2, pwmMotor2);
   return true;
 }
 
 void loopHandler() {
+
 }
 
 void setup() {
@@ -87,6 +111,8 @@ void setup() {
 
   Homie.setup();
 
+  M1.setmotor(_STOP, 0);
+  M2.setmotor(_STOP, 0);
 }
 
 void loop() {
