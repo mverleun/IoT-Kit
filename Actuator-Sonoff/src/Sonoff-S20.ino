@@ -6,52 +6,69 @@
 
 #include <Homie.h>
 
-const int PIN_RELAY = 12;
-const int PIN_LED = 13;
-const int PIN_BUTTON = 0;
+/*
+        Define where the internal components of the Sonoff device
+        are connected to.
+*/
+const int PIN_RELAY = 12; // D6
+const int PIN_LED = 13; // D7
+const int PIN_BUTTON = 0; //D3
 
 unsigned long buttonDownTime = 0;
 byte lastButtonState = 1;
 byte buttonPressHandled = 0;
 
+/*
+          Configure the node as a single device, even as it has
+          serveral ways of operation.
+*/
 HomieNode switchNode("switch", "switch");
 
+/*        Function called when something is published to topic
+          devices/<device>/switch/switch/on/set
+          Valid values are "true" and "false"
+*/
 bool switchOnHandler(HomieRange range, String value) {
   if (value != "true" && value != "false") return false;
 
   bool on = (value == "true");
   digitalWrite(PIN_RELAY, on ? HIGH : LOW);
   switchNode.setProperty("on").send(value);
-  Homie.getLogger() << "Switch is " << (on ? "on" : "off") << endl;
-
   return true;
 }
 
+/*
+          Toggle the relay from on to off and vice versa and
+          update the status of the topic devices/<device>/switch/switch/on
+*/
 void toggleRelay() {
   bool on = digitalRead(PIN_RELAY) == HIGH;
   digitalWrite(PIN_RELAY, on ? LOW : HIGH);
   switchNode.setProperty("on").send(on ? "false" : "true");
-  Homie.getLogger() << "Switch is " << (on ? "off" : "on") << endl;
 }
 
 
 void setupHandler() {
-  // switchNode.setProperty("unit").send("c");
 }
 
 void loopHandler() {
+/*
+            Check to see if button is pressed. If it is pressed start a counter
+            to measure how long the button is pressed.
+            If the button is held down between 90 and 900 ms then toggle the relay.
+*/
   byte buttonState = digitalRead(PIN_BUTTON);
   if ( buttonState != lastButtonState ) {
     if (buttonState == LOW) {
       buttonDownTime     = millis();
       buttonPressHandled = 0;
-    }
+    } // if
     else {
       unsigned long dt = millis() - buttonDownTime;
       if ( dt >= 90 && dt <= 900 && buttonPressHandled == 0 ) {
         toggleRelay();
         buttonPressHandled = 1;
-      }
+      } 
     }
     lastButtonState = buttonState;
   }
@@ -73,9 +90,6 @@ void setup() {
 
   Homie.setSetupFunction(setupHandler).setLoopFunction(loopHandler);
   Homie.setup();
-
-  // Initialize device.
-
 }
 
 void loop() {
