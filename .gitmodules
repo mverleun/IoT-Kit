@@ -1,0 +1,3 @@
+[submodule "Actuator-TB16612/add-ons/wemos_motor_shield"]
+	path = Actuator-TB16612/add-ons/wemos_motor_shield
+	url = https://github.com/pbugalski/wemos_motor_shield/

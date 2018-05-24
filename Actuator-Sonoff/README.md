@@ -1,6 +1,6 @@
 # Actuator-Sonoff
 
-This firmware is meant to be used on a Sonoff S20 switch.
+This firmware is meant to be used on a Sonoff S20 switch. It's part of the [IoT Kit for education](https://www.iot-kit.nl) project.
 
 It serves as an actuator that can switch a light on and off via MQTT.
 

@@ -1,6 +1,6 @@
 # Sensor Wemos D1 mini with HC-SR04
 
-This firmware is meant to be used on a Wemos D1.
+This firmware is meant to be used on a Wemos D1. It's part of the [IoT Kit for education](https://www.iot-kit.nl) project.
 It is based on the homie platform developed by Marvin Roger.
 The original documentation can be found here: http://marvinroger.github.io/homie-esp8266/
 
