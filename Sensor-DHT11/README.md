@@ -8,12 +8,12 @@ Aliexpress has [this one](https://www.aliexpress.com/item/Free-Shipping-DHT-Shie
 ## Connecting the hardware
 Connect the hardware as follows: 
 
-```
-DHT11     Wemos D1 Mini
-VCC ----- +3.3V
-GND ----- GND
-SIG ----- D4
-```
+| DHT11 |  Wemos D1 mini |
+| --- | ---|
+| VCC |+3.3V |
+| GND | GND |
+| SIG | D4 |
+
 ## MQTT
 If all is configured well you should receive measurements on the following topics:
 

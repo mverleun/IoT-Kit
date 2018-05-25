@@ -8,13 +8,14 @@ This node serves as a sensor that reports distance via MQTT. The sensor used is 
 
 ## Connecting the hardware
 Connect the hardware as follows:
-```
-BH-1750   Wemos D1 mini
-VCC ----- +3.3V
-GND ----- GND
-SCL ----- D1
-SDA ----- D2
-```
+
+| BH-1750 |  Wemos D1 mini |
+| --- | ---|
+| VCC |+3.3V |
+| GND | GND |
+| SCL | D1 |
+| SDA | D2 |
+
 ## Compiling and uploading
 This firmware embeds the ui_bundle to make the initial configuration easier.
 In order to upload it into the SPIFFS filesystem you have to build the firmware first and then open up a terminal.

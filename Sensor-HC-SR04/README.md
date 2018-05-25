@@ -8,13 +8,13 @@ This node serves as a sensor that reports distance via MQTT. The sensor used is 
 
 ## Connecting the hardware
 Connect the hardware as follows:
-```
-HC-SR04   Wemos D1 mini
-VCC ----- +5V (!)
-GND ----- GND
-Trig ---- D6
-Echo ---- D7
-```
+
+| HC-SR04 |  Wemos D1 mini |
+| --- | ---|
+| VCC |+5V (!) |
+| GND | GND |
+| Trig | D6 |
+| Echo | D7 |
 ## Compiling and uploading
 This firmware embeds the ui_bundle to make the initial configuration easier.
 In order to upload it into the SPIFFS filesystem you have to build the firmware first and then open up a terminal.
@@ -48,7 +48,7 @@ For MQTT you can ommit `username`, `password` and `auth` if your MQTT server doe
 
 If you ommit `base_topic` it will default to the value "homie"
 
-##MQTT
+## MQTT
 If all is configured well you should receive measurements on the following topics:
 ```
 <base_topic>/<device_id>/distance/distance
