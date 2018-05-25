@@ -15,6 +15,7 @@ Connect the hardware as follows:
 | GND | GND |
 | Trig | D6 |
 | Echo | D7 |
+
 ## Compiling and uploading
 This firmware embeds the ui_bundle to make the initial configuration easier.
 In order to upload it into the SPIFFS filesystem you have to build the firmware first and then open up a terminal.
