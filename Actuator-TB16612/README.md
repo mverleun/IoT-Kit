@@ -2,7 +2,7 @@
 
 This firmware is meant to be used on a Wemos D1. It's part of the [IoT Kit for education](https://www.iot-kit.nl) project.
 It is based on the homie platform developed by Marvin Roger.
-The original documentation can be found here: http://marvinroger.github.io/homie-esp8266/
+The original documentation can be found here: [http://marvinroger.github.io/homie-esp8266/](http://marvinroger.github.io/homie-esp8266/)
 
 This node serves as an actuator that controls one or two motors via MQTT. The actuator used is a BH-1750.
 
