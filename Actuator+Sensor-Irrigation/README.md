@@ -1,6 +1,7 @@
 # Wemos D1 mini as plant irrigation system
 
-This firmware is meant to be used on a Wemos D1 Mini with a DHT-11 shield. It's part of the [IoT Kit for education](https://www.iot-kit.nl) project.
+This firmware is meant to be used on a Wemos D1 Mini with a DHT-11 shield, a relay shield and a plant moisture sensor.
+It's part of the [IoT Kit for education](https://www.iot-kit.nl) project.
 There are several shields available, make sure you get one that has the DHT-11 connected to D4 and *not* the I2C version.
 Aliexpress has [this one](https://www.aliexpress.com/item/Free-Shipping-DHT-Shield-For-Wemos-D1-Mini-DHT11-Single-Bus-Digital-Temperature-And-Humidity-Sensor/32792325206.html) for sale.
 
@@ -13,11 +14,10 @@ Connect the hardware as follows:
 | VCC |+3.3V |
 | GND | GND |
 | SIG | D4 |
-
-
+| | |
 | Moisture Sensor |  Wemos D1 mini |
 | --- | ---|
-| VCC |+3.3V |
+| VCC | D5 |
 | GND | GND |
 | SIG | A0 |
 
@@ -31,13 +31,13 @@ If all is configured well you should receive measurements on the following topic
 <base_topic>/<device_id>/humidity/json
 <base_topic>/<device_id>/moisture/humidity
 <base_topic>/<device_id>/moisture/json
-<base_topic>/<device_id>/watering/watering
+<base_topic>/<device_id>/relay/power
 ```
 
 Controlling the pump is done via
 ```
-<base_topic>/<device_id>/watering/watering/set
+<base_topic>/<device_id>/relay/power/set
 ```
-which takes a value ON of OFF
-Temperature and humidity are reported as floating point values.
+which takes a value ON of OFF.
+Temperature, moisture and humidity are reported as floating point values.
 The JSON output contains the name of the sensor, the name of the metric reported and the value of the measurement.

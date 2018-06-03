@@ -1,16 +1,15 @@
 /*
-1.1.0  04-04-2018 Added JSON output
-1.0.2  02-04-2018 Simplified code
-1.0.1  02-04-2018 Updated Libraries, added ui in /data
-1.0.0  25-03-2018 Initial version
+1.0.0  02-06-2018 Initial version
 */
 #include <Homie.h>
 
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 
-#define DHTPIN            D4 // Pin which is connected to the DHT sensor.
-
+#define DHTPIN                D4 // Pin which is connected to the DHT sensor.
+#define MOISTURE_SENSOR_PIN   A0 // Pin where readings from sensor come in.
+#define MOISTURE_SENSOR_PWR_PIN D5 // Used to switch sensor power on and off
+#define RELAYPIN              D1 // Pin to which relay (pump) is connected.
 // Uncomment the type of sensor in use:
 #define DHTTYPE           DHT11     // DHT 11
 //#define DHTTYPE           DHT22     // DHT 22 (AM2302)
@@ -24,17 +23,30 @@ float current_temperature;
 float previous_temperature = 0.0;
 float current_humidity;
 float previous_humidity = 0.0;
+float current_moisture;
+float previous_moisture = 0.0;
 
 // The DHT-11 sensor provides two different readings.
 // As such we can create two different nodes. One for temperature and one for humidiy
 HomieNode temperatureNode("temperature", "temperature");
 HomieNode humidityNode("humidity", "humidity");
+HomieNode moistureNode("moisture", "moisture");
 
+float readMoisture() {
+  float moisture;
+
+  pinMode(MOISTURE_SENSOR_PWR_PIN, OUTPUT);
+  digitalWrite(MOISTURE_SENSOR_PWR_PIN, HIGH); // Power sensor on
+  delay(2000); // settle time
+  moisture = analogRead(MOISTURE_SENSOR_PIN) / 1024 * 100;
+  digitalWrite(MOISTURE_SENSOR_PWR_PIN, LOW);  // Power sensor off
+  return moisture;
+}
 
 void setupHandler() {
   temperatureNode.setProperty("unit").send("c");
   humidityNode.setProperty("unit").send("%");
-  
+  moistureNode.setProperty("unit").send("%");
   // Initialize device.
   dht.begin();
 
@@ -53,6 +65,7 @@ void loopHandler() {
 
   float temperature = dht.readTemperature();
   float humidity = dht.readHumidity();
+  float moisture = readMoisture();
 
   if (isnan(temperature)) {
     Serial.println("Error reading temperature!");
@@ -88,17 +101,33 @@ void loopHandler() {
                                               " }");
       previous_humidity = current_humidity;
     }
+    // Only publish info if there is a change in Moisture
+    current_moisture = moisture;
+    if ( current_moisture != previous_moisture ) {
+      Homie.getLogger() << "Moisture: " << current_humidity << " %" << endl;
+      moistureNode.setProperty("moisture").send(String(current_moisture));
+      moistureNode.setProperty("json").send("{ \"name\": \"" + String(Homie.getConfiguration().name) + "\""+
+                                              ", \"metric\": \"moisture\"" +
+                                              ", \"value\": " + String(current_moisture) +
+                                              " }");
+      previous_moisture = current_moisture;
+    }
   }
 }
 
 void setup() {
   Serial.begin(115200);
   Serial << endl << endl;
-  Homie_setFirmware("wemos-d1-dht11", "1.0.2");
+  Homie_setFirmware("wemos-d1-irrigation", "1.0.0");
   Homie.setSetupFunction(setupHandler).setLoopFunction(loopHandler);
   Homie.setBroadcastHandler(broadcastHandler); // before Homie.setup()
   temperatureNode.advertise("temperature_unit");
   humidityNode.advertise("humidity_unit");
+<<<<<<< HEAD
+  moistureNode.advertise("moisture_unit");
+=======
+  humidityNode.advertise("moisture_unit");
+>>>>>>> 774a7093bf5ee9d63948c6c9c944222dade3b7b6
 
   Homie.setup();
 }
