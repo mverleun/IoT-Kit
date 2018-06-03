@@ -123,15 +123,7 @@ void setup() {
   Homie.setBroadcastHandler(broadcastHandler); // before Homie.setup()
   temperatureNode.advertise("temperature_unit");
   humidityNode.advertise("humidity_unit");
-<<<<<<< HEAD
-<<<<<<< HEAD
   moistureNode.advertise("moisture_unit");
-=======
-  humidityNode.advertise("moisture_unit");
->>>>>>> 774a7093bf5ee9d63948c6c9c944222dade3b7b6
-=======
-  humidityNode.advertise("moisture_unit");
->>>>>>> 774a7093bf5ee9d63948c6c9c944222dade3b7b6
 
   Homie.setup();
 }
