@@ -25,12 +25,16 @@ float current_humidity;
 float previous_humidity = 0.0;
 float current_moisture;
 float previous_moisture = 0.0;
+float desiredMoisture = 0.0;
+
+boolean relayOn = false;
 
 // The DHT-11 sensor provides two different readings.
 // As such we can create two different nodes. One for temperature and one for humidiy
 HomieNode temperatureNode("temperature", "temperature");
 HomieNode humidityNode("humidity", "humidity");
 HomieNode moistureNode("moisture", "moisture");
+HomieNode relayNode("relay", "relayOn");
 
 float readMoisture() {
   float moisture;
@@ -41,6 +45,23 @@ float readMoisture() {
   moisture = analogRead(MOISTURE_SENSOR_PIN) / 1024 * 100;
   digitalWrite(MOISTURE_SENSOR_PWR_PIN, LOW);  // Power sensor off
   return moisture;
+}
+
+void setRelay(String value) {
+  if (value == "on") {
+    digitalWrite(RELAYPIN, HIGH);
+  }
+  if (value == "off") {
+    digitalWrite(RELAYPIN, LOW);
+  }
+  relayNode.setProperty("status").send(value);
+}
+
+bool moistureHandler(HomieRange range, String value) {
+  Serial << "Received desiredMoisture: " << String(value) << endl;
+  desiredMoisture = value.toFloat();
+  moistureNode.setProperty("desiredMoisture").send(value);
+  return true;
 }
 
 void setupHandler() {
@@ -101,17 +122,25 @@ void loopHandler() {
                                               " }");
       previous_humidity = current_humidity;
     }
-    // Only publish info if there is a change in Moisture
-    current_moisture = moisture;
-    if ( current_moisture != previous_moisture ) {
-      Homie.getLogger() << "Moisture: " << current_humidity << " %" << endl;
-      moistureNode.setProperty("moisture").send(String(current_moisture));
-      moistureNode.setProperty("json").send("{ \"name\": \"" + String(Homie.getConfiguration().name) + "\""+
-                                              ", \"metric\": \"moisture\"" +
-                                              ", \"value\": " + String(current_moisture) +
-                                              " }");
-      previous_moisture = current_moisture;
-    }
+  }
+  // Only publish info if there is a change in Moisture
+  current_moisture = moisture;
+  if ( current_moisture != previous_moisture ) {
+    Homie.getLogger() << "Moisture: " << current_humidity << " %" << endl;
+    moistureNode.setProperty("moisture").send(String(current_moisture));
+    moistureNode.setProperty("json").send("{ \"name\": \"" + String(Homie.getConfiguration().name) + "\""+
+                                            ", \"metric\": \"moisture\"" +
+                                            ", \"value\": " + String(current_moisture) +
+                                            " }");
+    previous_moisture = current_moisture;
+  }
+  // Check if we need to turn on the relay
+  if (relayOn == false and current_moisture < desiredMoisture) {
+    setRelay("on");
+  }
+  // Check if we need to turn off the relay
+  if (relayOn == true and current_moisture > desiredMoisture) {
+    setRelay("off");
   }
 }
 
@@ -124,7 +153,8 @@ void setup() {
   temperatureNode.advertise("temperature_unit");
   humidityNode.advertise("humidity_unit");
   moistureNode.advertise("moisture_unit");
-
+  moistureNode.advertise("desiredMoisture").settable(moistureHandler);
+  relayNode.advertise("relayOn");
   Homie.setup();
 }
 

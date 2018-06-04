@@ -16,6 +16,9 @@ Connect the hardware as follows:
 | SCL | D1 |
 | SDA | D2 |
 
+See the following image how to make your own using a standard prototyping shield. All the colored wires are soldered on the back of the shield.
+![BH-1750 Shield](img/Fritzing.png)
+
 ## Compiling and uploading
 This firmware embeds the ui_bundle to make the initial configuration easier.
 In order to upload it into the SPIFFS filesystem you have to build the firmware first and then open up a terminal.
