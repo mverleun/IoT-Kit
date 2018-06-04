@@ -3,12 +3,13 @@
 */
 #include <Homie.h>
 
+// For DHT 11
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 
 #define DHTPIN                D4 // Pin which is connected to the DHT sensor.
 #define MOISTURE_SENSOR_PIN   A0 // Pin where readings from sensor come in.
-#define MOISTURE_SENSOR_PWR_PIN D5 // Used to switch sensor power on and off
+#define MOISTURE_SENSOR_PWR_PIN D7 // Used to switch sensor power on and off
 #define RELAYPIN              D1 // Pin to which relay (pump) is connected.
 // Uncomment the type of sensor in use:
 #define DHTTYPE           DHT11     // DHT 11
@@ -41,8 +42,9 @@ float readMoisture() {
 
   pinMode(MOISTURE_SENSOR_PWR_PIN, OUTPUT);
   digitalWrite(MOISTURE_SENSOR_PWR_PIN, HIGH); // Power sensor on
-  delay(2000); // settle time
-  moisture = analogRead(MOISTURE_SENSOR_PIN) / 1024 * 100;
+  delay(5000); // settle time
+  moisture = 100 - analogRead(MOISTURE_SENSOR_PIN) / 10;
+  Homie.getLogger() << "readMoisture: " << String(moisture) << " %" << endl;
   digitalWrite(MOISTURE_SENSOR_PWR_PIN, LOW);  // Power sensor off
   return moisture;
 }
@@ -68,6 +70,8 @@ void setupHandler() {
   temperatureNode.setProperty("unit").send("c");
   humidityNode.setProperty("unit").send("%");
   moistureNode.setProperty("unit").send("%");
+  moistureNode.setProperty("desiredMoisture").send("0");
+  relayNode.setProperty("status").send("off");
   // Initialize device.
   dht.begin();
 
@@ -86,7 +90,7 @@ void loopHandler() {
 
   float temperature = dht.readTemperature();
   float humidity = dht.readHumidity();
-  float moisture = readMoisture();
+  float current_moisture = readMoisture();
 
   if (isnan(temperature)) {
     Serial.println("Error reading temperature!");
@@ -123,9 +127,11 @@ void loopHandler() {
       previous_humidity = current_humidity;
     }
   }
-  // Only publish info if there is a change in Moisture
-  current_moisture = moisture;
-  if ( current_moisture != previous_moisture ) {
+
+  Homie.getLogger() << "Moisture: " << current_moisture << " %" << endl;
+  // Only publish info if there is a change in Moisture and we have a valid
+  // reading
+  if (current_moisture != previous_moisture and current_moisture > 0) {
     Homie.getLogger() << "Moisture: " << current_humidity << " %" << endl;
     moistureNode.setProperty("moisture").send(String(current_moisture));
     moistureNode.setProperty("json").send("{ \"name\": \"" + String(Homie.getConfiguration().name) + "\""+

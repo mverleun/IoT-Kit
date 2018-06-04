@@ -1,0 +1,19 @@
+{
+  "wifi":{
+    "ssid":"MarCoach-IoT",
+    "password": "800ballen"
+    },
+  "mqtt":{
+    "host":"mqtt.marcoach.nl",
+    "port":1883,
+    "base_topic":"devices/",
+    "username": "iot",
+    "password": "iotwithmqtt",
+    "auth":true
+  },
+  "name":"Sonoff 2",
+  "ota":{
+    "enabled":true
+    },
+  "device_id":"sonoff-2"
+}
