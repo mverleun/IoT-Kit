@@ -52,7 +52,7 @@ For MQTT you can ommit `username`, `password` and `auth` if your MQTT server doe
 
 If you ommit `base_topic` it will default to the value "homie"
 
-##MQTT
+## MQTT
 If all is configured well you should receive measurements on the following topics:
 ```
 <base_topic>/<device_id>/light/light
