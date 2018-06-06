@@ -5,6 +5,11 @@
 */
 
 #include <Homie.h>
+
+#include <ArduinoJson.h>
+
+StaticJsonBuffer<100> jsonBuffer;
+
 #include <Wire.h>
 #include <BH1750.h>
 
@@ -27,6 +32,10 @@ void setupHandler() {
 }
 
 void loopHandler() {
+  JsonObject& JSONroot = jsonBuffer.createObject();
+  String JSONmessageBuffer;
+  JSONroot["name"] = String(Homie.getConfiguration().name);
+
   uint16_t current_lux = lightMeter.readLightLevel();
   unsigned long now = millis();
 
@@ -36,10 +45,20 @@ void loopHandler() {
     // Publish values as float.
     lightNode.setProperty("light").send(String(current_lux));
     // Publish data in JSON format
-    lightNode.setProperty("json").send("{ \"name\": \"" + String(Homie.getConfiguration().name) + "\""+
-                                            ", \"metric\": \"light\"" +
-                                            ", \"value\": " + String(current_lux) +
-                                            " }");
+    JSONroot["name"] = String(Homie.getConfiguration().name);
+    JSONroot["metric"] = "light";
+    JSONroot["value"] = String(current_lux);
+
+    //Convert JSON to string
+    JSONmessageBuffer = "";
+    JSONroot.printTo(JSONmessageBuffer);
+
+    // Publish JSON information
+    lightNode.setProperty("json").send(JSONmessageBuffer);
+
+    // Clear JSON buffer
+    jsonBuffer.clear();
+
     previous_lux = current_lux;
   }
 

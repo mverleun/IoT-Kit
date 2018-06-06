@@ -6,6 +6,10 @@
 */
 #include <Homie.h>
 
+#include <ArduinoJson.h>
+
+StaticJsonBuffer<100> jsonBuffer;
+
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 
@@ -34,7 +38,7 @@ HomieNode humidityNode("humidity", "humidity");
 void setupHandler() {
   temperatureNode.setProperty("unit").send("c");
   humidityNode.setProperty("unit").send("%");
-  
+
   // Initialize device.
   dht.begin();
 
@@ -47,6 +51,10 @@ bool broadcastHandler(const String& level, const String& value) {
 }
 
 void loopHandler() {
+  JsonObject& JSONroot = jsonBuffer.createObject();
+  String JSONmessageBuffer;
+  JSONroot["name"] = String(Homie.getConfiguration().name);
+
   // Delay between measurements.
   delay(delayMS);
   // Get temperature event and publish its value.
@@ -65,10 +73,20 @@ void loopHandler() {
       // Publish value as float
       temperatureNode.setProperty("temperature").send(String(current_temperature));
       // Publish data in JSON format
-      temperatureNode.setProperty("json").send("{ \"name\": \"" + String(Homie.getConfiguration().name) + "\""+
-                                              ", \"metric\": \"temperature\"" +
-                                              ", \"value\": " + String(current_temperature) +
-                                              " }");
+      JSONroot["name"] = String(Homie.getConfiguration().name);
+      JSONroot["metric"] = "temperature";
+      JSONroot["value"] = String(current_temperature);
+
+      //Convert JSON to string
+      JSONmessageBuffer = "";
+      JSONroot.printTo(JSONmessageBuffer);
+
+      // Publish JSON information
+      temperatureNode.setProperty("json").send(JSONmessageBuffer);
+
+      // Clear JSON buffer
+      jsonBuffer.clear();
+
       previous_temperature = current_temperature;
     }
   }
@@ -82,10 +100,16 @@ void loopHandler() {
     if ( current_humidity != previous_humidity ) {
       Homie.getLogger() << "Humidity: " << current_humidity << " %" << endl;
       humidityNode.setProperty("humidity").send(String(current_humidity));
-      temperatureNode.setProperty("json").send("{ \"name\": \"" + String(Homie.getConfiguration().name) + "\""+
-                                              ", \"metric\": \"humidity\"" +
-                                              ", \"value\": " + String(current_humidity) +
-                                              " }");
+
+      JSONroot["name"] = String(Homie.getConfiguration().name);
+      JSONroot["metric"] = "humidity";
+      JSONroot["value"] = String(current_humidity);
+
+      JSONmessageBuffer = "";
+      JSONroot.printTo(JSONmessageBuffer);
+      humidityNode.setProperty("json").send(JSONmessageBuffer);
+      jsonBuffer.clear();
+
       previous_humidity = current_humidity;
     }
   }

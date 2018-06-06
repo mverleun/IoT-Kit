@@ -5,6 +5,10 @@
 */
 #include <Homie.h>
 
+#include <ArduinoJson.h>
+
+StaticJsonBuffer<100> jsonBuffer;
+
 #define TRIGGER D6
 #define ECHO D7
 
@@ -18,13 +22,17 @@ HomieNode distanceNode("distance", "distance");
 
 void setupHandler() {
   distanceNode.setProperty("unit").send("cm");
-  
+
   // Set the GPIO pins correctly
   pinMode(TRIGGER, OUTPUT);
   pinMode(ECHO, INPUT);
 }
 
 void loopHandler() {
+  JsonObject& JSONroot = jsonBuffer.createObject();
+  String JSONmessageBuffer;
+  JSONroot["name"] = String(Homie.getConfiguration().name);
+
   /* The following TRIGGER/ECHO cycle is used to determine the
   distance of the nearest object by bouncing soundwaves off of it. */
 
@@ -49,6 +57,21 @@ void loopHandler() {
   if (measurement_counter > 3 ) {
     Homie.getLogger() << "Distance: " << current_distance << " cm" << endl;
     distanceNode.setProperty("distance").send(String(current_distance));
+    // Publish data in JSON format
+    JSONroot["name"] = String(Homie.getConfiguration().name);
+    JSONroot["metric"] = "temperature";
+    JSONroot["value"] = String(current_distance);
+
+    //Convert JSON to string
+    JSONmessageBuffer = "";
+    JSONroot.printTo(JSONmessageBuffer);
+
+    // Publish JSON information
+    distanceNode.setProperty("json").send(JSONmessageBuffer);
+
+    // Clear JSON buffer
+    jsonBuffer.clear();
+
     distanceNode.setProperty("json").send("{ \"name\": \"" + String(Homie.getConfiguration().name) + "\""+
                                             ", \"metric\": \"distance\"" +
                                             ", \"value\": " + String(current_distance) +

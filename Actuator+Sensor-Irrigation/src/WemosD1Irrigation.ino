@@ -1,11 +1,12 @@
 /*
+1.0.1  06-06-2018 JSON output
 1.0.0  02-06-2018 Initial version
 */
 #include <Homie.h>
 
 #include <ArduinoJson.h>
 
-StaticJsonBuffer<300> jsonBuffer;
+StaticJsonBuffer<100> jsonBuffer;
 
 // For DHT 11
 #include <Adafruit_Sensor.h>
@@ -38,9 +39,19 @@ boolean relayOn = false;
 // As such we can create two different nodes. One for temperature and one for humidiy
 HomieNode temperatureNode("temperature", "temperature");
 HomieNode humidityNode("humidity", "humidity");
+// We also need a node for the moisture sensor
 HomieNode moistureNode("moisture", "moisture");
+// And one to control the relay.
 HomieNode relayNode("relay", "relay");
 
+
+/*
+  readMoisture powers the moisture sensor on, waits a couple
+  of seconds so it can stabilize and then reads the value
+  through the analog port A0.
+  When done it powers the port down to increase the lifetime
+  of the sensor.
+*/
 float readMoisture() {
   float moisture;
 
@@ -53,6 +64,9 @@ float readMoisture() {
   return moisture;
 }
 
+/*
+  Toggle the relay on or off.
+*/
 void setRelay(String value) {
   if (value == "on") {
     digitalWrite(RELAYPIN, HIGH);
@@ -65,14 +79,28 @@ void setRelay(String value) {
   relayNode.setProperty("status").send(value);
 }
 
+/*
+  When information is published to the topic devices/<id>/moisture/setpoint/setup
+  this routine is invoked.
+  It receives the desired value of the moisture of the soil.
+*/
 bool moistureHandler(HomieRange range, String value) {
   Serial << "Received desiredMoisture: " << String(value) << endl;
   desiredMoisture = value.toFloat();
-  moistureNode.setProperty("desiredMoisture").send(value);
+  moistureNode.setProperty("setpoint").send(value);
   return true;
 }
 
+/*
+  Perform setup functions of Homie.
+  These are done only once.
+*/
 void setupHandler() {
+  temperatureNode.advertise("temperature");
+  humidityNode.advertise("humidity");
+  moistureNode.advertise("moisture");
+  moistureNode.advertise("setpoint").settable(moistureHandler);
+  relayNode.advertise("actual");
   temperatureNode.setProperty("unit").send("°C");
   humidityNode.setProperty("unit").send("%");
   moistureNode.setProperty("unit").send("%");
@@ -90,8 +118,8 @@ bool broadcastHandler(const String& level, const String& value) {
 }
 
 void loopHandler() {
-  char JSONmessageBuffer[100];
   JsonObject& JSONroot = jsonBuffer.createObject();
+  String JSONmessageBuffer;
   JSONroot["name"] = String(Homie.getConfiguration().name);
 
   // Get temperature event and publish its value.
@@ -108,18 +136,25 @@ void loopHandler() {
     if ( current_temperature != previous_temperature ) {
       Homie.getLogger() << "Temperature: " << current_temperature << " °C" << endl;
       // Publish value as float
-      temperatureNode.setProperty("value").send(String(current_temperature));
-
+      temperatureNode.setProperty("temperature").send(String(current_temperature));
       // Publish data in JSON format
+      JSONroot["name"] = String(Homie.getConfiguration().name);
       JSONroot["metric"] = "temperature";
       JSONroot["value"] = String(current_temperature);
 
-      JSONroot.printTo(JSONmessageBuffer, sizeof(JSONmessageBuffer));
+      //Convert JSON to string
+      JSONmessageBuffer = "";
+      JSONroot.printTo(JSONmessageBuffer);
+
+      // Publish JSON information
       temperatureNode.setProperty("json").send(JSONmessageBuffer);
 
+      // Clear JSON buffer
+      jsonBuffer.clear();
+
       previous_temperature = current_temperature;
-    }
-  }
+    } // if
+  } // else
 
   if (isnan(humidity)) {
     Serial.println("Error reading humidity!");
@@ -129,30 +164,36 @@ void loopHandler() {
     // Only publish info if there is a change in Humidity
     if ( current_humidity != previous_humidity ) {
       Homie.getLogger() << "Humidity: " << current_humidity << " %" << endl;
-      humidityNode.setProperty("value").send(String(current_humidity));
+      humidityNode.setProperty("humidity").send(String(current_humidity));
 
+      JSONroot["name"] = String(Homie.getConfiguration().name);
       JSONroot["metric"] = "humidity";
       JSONroot["value"] = String(current_humidity);
 
-      JSONroot.printTo(JSONmessageBuffer, sizeof(JSONmessageBuffer));
+      JSONmessageBuffer = "";
+      JSONroot.printTo(JSONmessageBuffer);
       humidityNode.setProperty("json").send(JSONmessageBuffer);
+      jsonBuffer.clear();
 
       previous_humidity = current_humidity;
-    }
-  }
+    } // if
+  } // else
 
   Homie.getLogger() << "Moisture: " << current_moisture << " %" << endl;
   // Only publish info if there is a change in Moisture and we have a valid
   // reading
   if (current_moisture != previous_moisture and current_moisture > 0) {
     Homie.getLogger() << "Moisture: " << current_humidity << " %" << endl;
-    moistureNode.setProperty("value").send(String(current_moisture));
+    moistureNode.setProperty("moisture").send(String(current_moisture));
 
+    JSONroot["name"] = String(Homie.getConfiguration().name);
     JSONroot["metric"] = "moisture";
     JSONroot["value"] = String(current_moisture);
 
-    JSONroot.printTo(JSONmessageBuffer, sizeof(JSONmessageBuffer));
+    JSONmessageBuffer = "";
+    JSONroot.printTo(JSONmessageBuffer);
     moistureNode.setProperty("json").send(JSONmessageBuffer);
+    jsonBuffer.clear();
 
     previous_moisture = current_moisture;
   }
@@ -169,14 +210,10 @@ void loopHandler() {
 void setup() {
   Serial.begin(115200);
   Serial << endl << endl;
-  Homie_setFirmware("wemos-d1-irrigation", "1.0.0");
+  Homie_setFirmware("wemos-d1-irrigation", "1.0.1");
   Homie.setSetupFunction(setupHandler).setLoopFunction(loopHandler);
   Homie.setBroadcastHandler(broadcastHandler); // before Homie.setup()
-  temperatureNode.advertise("actual");
-  humidityNode.advertise("actual");
-  moistureNode.advertise("actual");
-  moistureNode.advertise("setpoint").settable(moistureHandler);
-  relayNode.advertise("actual");
+
   Homie.setup();
 }
 
