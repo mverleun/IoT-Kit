@@ -15,3 +15,5 @@ micropython/5.2.15 OTA update · Pycom Documentation.webloc
 micropython/appelsiini.net:2017:wipy-esp32-firmware-cli.webloc
 */.DS_Store
 *.elf
+Documentation/.~lock.IoT landscape.odt#
+Actuator-Sonoff/.DS_Store

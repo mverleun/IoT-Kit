@@ -2,4 +2,7 @@
 .piolibdeps
 .clang_complete
 .gcc-flags.json
+<<<<<<< HEAD
 config.json
+=======
+>>>>>>> 847caff... Initial commit
