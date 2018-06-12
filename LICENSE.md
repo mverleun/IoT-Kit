@@ -1,4 +1,4 @@
-MIT License
+# MIT License
 
 Copyright (c) 2018 MarCoach
 
@@ -19,3 +19,19 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+# Licenses of used software
+
+| Software | License |
+| --- | --- |
+| [Homie](https://github.com/marvinroger/homie-esp8266/) | MIT License |
+| [ArduinoJSON](https://arduinojson.org) | MIT License |
+| [Adafruit Unified Sensor Driver](https://www.arduinolibraries.info/libraries/adafruit-unified-sensor)| MIT License |
+| [Async MQTT Client](https://github.com/marvinroger/async-mqtt-client) | MIT License|
+| [AsyncTCP](https://github.com/me-no-dev/AsyncTCP) | GNU Lesser GPL v3.0 |
+| [Bounce2](https://github.com/thomasfredericks/Bounce2) | MIT License |
+| [DHT Sensor Library](https://github.com/adafruit/DHT-sensor-library) | MIT License |
+| [ESP Async WebServer](https://github.com/me-no-dev/ESPAsyncWebServer) | GNU Lesser GPL v2.1 |
+| [ESPAsyncTCP](https://platformio.org/lib/show/305/ESPAsyncTCP) | GNU Lesser GPL v2.1 |
+
+
