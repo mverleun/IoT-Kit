@@ -17,3 +17,4 @@ micropython/appelsiini.net:2017:wipy-esp32-firmware-cli.webloc
 *.elf
 Documentation/.~lock.IoT landscape.odt#
 Actuator-Sonoff/.DS_Store
+*.odt#

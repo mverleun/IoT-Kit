@@ -25,7 +25,7 @@ bool textHandler(HomieRange range, String value) {
 }
 
 void setupHandler() {
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3D
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C
   display.display();
 
 }
