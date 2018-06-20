@@ -15,6 +15,7 @@ StaticJsonBuffer<100> jsonBuffer;
 
 // SCL = D1
 // SDA = D2
+#define MQTT_SERVER_FINGERPRINT {0xd6, 0x27, 0x18, 0xdd, 0x09, 0xce, 0x3d, 0x80, 0x1f, 0x59, 0x7a, 0x2b, 0x29, 0x78, 0x93, 0xe8, 0x0b, 0x82, 0x8a, 0x5d}
 
 BH1750 lightMeter(0x23);
 float current_lux;
@@ -92,7 +93,11 @@ void setup() {
   lightNode.advertise("lux");
 
   Homie.setup();
-
+  #if ASYNC_TCP_SSL_ENABLED
+    Homie.getLogger() << endl << endl << F("ESP Homie Using TLS") << endl;
+    Homie.getMqttClient().setSecure(true);
+//    Homie.getMqttClient().addServerFingerprint((const uint8_t[])MQTT_SERVER_FINGERPRINT);
+  #endif
   Wire.begin(D1, D2);
 
   if (lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE)) {
