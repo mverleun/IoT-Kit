@@ -15,7 +15,7 @@
 #define DHTPIN                D4 // Pin which is connected to the DHT sensor.
 #define MOISTURE_SENSOR_PIN   A0 // Pin where readings from sensor come in.
 #define MOISTURE_SENSOR_PWR_PIN D7 // Used to switch sensor power on and off
-#define RELAYPIN              D1 // Pin to which relay (pump) is connected.
+#define RELAYPIN              D5 // Pin to which relay (pump) is connected.
 // Uncomment the type of sensor in use:
 #define DHTTYPE           DHT11     // DHT 11
 //#define DHTTYPE           DHT22     // DHT 22 (AM2302)
@@ -35,6 +35,10 @@ float desiredMoisture = 0.0;
 
 boolean relayOn = false;
 
+#define ON_TIME = 10 * 1000;
+#define WAIT_TIME = 60 * 1000;
+long on_timer = 0; // Max relay activation time
+long wait_timer = 0; // Minimum interval between relay activations
 // The DHT-11 sensor provides two different readings.
 // As such we can create two different nodes. One for temperature and one for humidiy
 HomieNode temperatureNode("temperature", "temperature");
@@ -55,7 +59,7 @@ HomieNode relayNode("relay", "relay");
 float readMoisture() {
   float moisture;
 
-  pinMode(MOISTURE_SENSOR_PWR_PIN, OUTPUT);
+
   digitalWrite(MOISTURE_SENSOR_PWR_PIN, HIGH); // Power sensor on
   delay(3000); // settle time
   moisture = 100 - analogRead(MOISTURE_SENSOR_PIN) / 10;
@@ -68,9 +72,11 @@ float readMoisture() {
   Toggle the relay on or off.
 */
 void setRelay(String value) {
-  if (value == "on") {
+  if ((value == "on") and ((millis() - wait_timer) < WAIT_TIME)) {
     digitalWrite(RELAYPIN, HIGH);
     relayOn = true;
+    wait_timer = millis(); // Start countdown timers
+    on_timer = millis();
   }
   if (value == "off") {
     digitalWrite(RELAYPIN, LOW);
@@ -102,6 +108,8 @@ void setupHandler() {
   moistureNode.setProperty("setpoint").send("0");
   relayNode.setProperty("status").send("off");
 
+  pinMode(MOISTURE_SENSOR_PWR_PIN, OUTPUT);
+  pinMode(RELAYPIN, OUTPUT);
   // Initialize device.
   dht.begin();
 
