@@ -18,3 +18,4 @@ micropython/appelsiini.net:2017:wipy-esp32-firmware-cli.webloc
 config.json
 Actuator-Sonoff/.DS_Store
 Actuator-Sonoff/.DS_Store
+Sensor-HC-SR04/esphomelib/wemos_x/platformio.ini
