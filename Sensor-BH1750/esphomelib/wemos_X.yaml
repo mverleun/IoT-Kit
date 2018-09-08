@@ -15,6 +15,14 @@ mqtt:
   # Start all MQTT published topics with the following prefix, make sure there is no trailing /
   topic_prefix: 'devices/wemos_x'
 
+
+
+# Status LED, the built-in LED is on D4
+status_led:
+  pin:
+    number: D4
+    inverted: False
+
 # Enable logging
 logger:
 
