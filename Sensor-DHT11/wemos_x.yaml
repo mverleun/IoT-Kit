@@ -1,0 +1,59 @@
+esphomeyaml:
+  name: wemos_x
+  platform: ESP8266
+  board: d1_mini
+
+wifi:
+  ssid: '<SSID>'
+  password: '<PASSWORD>'
+
+mqtt:
+  broker: '<mqtt.example.com>'
+  port: 1883
+  # username: '<mqtt_user>'
+  # password: '<mqtt_password>'
+  # Start all MQTT published topics with the following prefix, make sure there is no trailing /
+  topic_prefix: 'devices/wemos_x'
+
+# Enable logging
+logger:
+
+ota:
+  password: '<OTAPASSWORD>'
+
+# The BH1750 sensor is an I2C sensor, so first prepare the 
+# controller to talk to I2C sensors!
+i2c:
+  sda: D1
+  scl: D2
+  scan: False
+  
+sensor:
+  # Wifi is a builtin sensor
+  - platform: wifi_signal
+    name: "WiFi Signal Sensor"
+    update_interval: 10s
+  # The DHT11 is connected to D4
+  # Every 5 seconds a new sample is taken
+  - platform: dht
+    pin: D4
+    model: DHT11
+    update_interval: 5s
+    temperature:
+      name: "Temperature"
+      filters:
+        - filter_nan:
+        - sliding_window_moving_average:
+            window_size: 1
+            send_every: 1
+        - unique:
+    humidity:
+      name: "Humidity"
+      filters:
+        - filter_nan:
+        - sliding_window_moving_average:
+            window_size: 1
+            send_every: 1
+        - unique:
+
+

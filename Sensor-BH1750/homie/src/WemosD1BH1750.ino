@@ -30,7 +30,7 @@ void loopHandler() {
   uint16_t current_lux = lightMeter.readLightLevel();
   unsigned long now = millis();
 
-  // Only publish info if there is a change in Temperature
+  // Only publish info if there is a change in light intensity
   if ( current_lux != previous_lux ) {
     Homie.getLogger() << "Light: " << current_lux << " lux" << endl;
     // Publish values as float.
