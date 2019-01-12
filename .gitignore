@@ -19,3 +19,9 @@ config.json
 Actuator-Sonoff/.DS_Store
 Actuator-Sonoff/.DS_Store
 Sensor-HC-SR04/esphomelib/wemos_x/platformio.ini
+.esphomeyaml/wemos-1.yaml.json
+BLE/*
+.gitignore*
+IoT Kit/*
+wemos*
+bmp280.yaml
