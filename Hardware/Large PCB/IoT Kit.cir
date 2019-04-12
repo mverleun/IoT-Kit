@@ -1,0 +1,38 @@
+* /Users/marco/Dropbox/NASC/IoT Kit/NASC IoT Kit v1.1/IoT Kit.cir
+
+* EESchema Netlist Version 1.1 (Spice format) creation date: vrijdag 09 juni 2017 09:49:43
+
+* To exclude a component from the Spice Netlist add [Spice_Netlist_Enabled] user FIELD set to: N
+* To reorder the component spice node sequence add [Spice_Node_Sequence] user FIELD and define sequence: 2,1,0
+
+* Sheet Name: /
+J1  ? +5V GPIO02-SDA1-I2C ? GPIO03-SCL1-I2C ? ? ? ? ? GPIO17 GPIO18 GPIO27 ? GPIO22 GPIO23 +3V3 GPIO24 ? ? ? ? ? ? ? ? ? ? GPIO5 ? GPIO6 ? ? ? ? GPIO16 ? ? GNDD ? RPi_GPIO		
+R2  Net-_C1-Pad2_ GNDD 10K		
+R4  GPIO5 Net-_C1-Pad2_ 1K		
+SW1  +3V3 Net-_C1-Pad2_ SW_Push		
+R7  Net-_C2-Pad2_ GNDD 10K		
+R9  GPIO18 Net-_C2-Pad2_ 1K		
+SW2  +3V3 Net-_C2-Pad2_ SW_Push		
+R1  Net-_D1-Pad1_ GNDD 470		
+D1  Net-_D1-Pad1_ GPIO6 LED		
+R3  Net-_D2-Pad1_ GNDD 470		
+D2  Net-_D2-Pad1_ GPIO17 LED		
+R5  Net-_D3-Pad1_ GNDD 470		
+D3  Net-_D3-Pad1_ GPIO18 LED		
+R6  Net-_D4-Pad1_ GNDD 470		
+D4  Net-_D4-Pad1_ GPIO27 LED		
+U1  +5V GPIO16 GNDD DHT11		
+R8  Net-_D5-Pad1_ GNDD 470		
+D5  Net-_D5-Pad1_ GPIO22 LED		
+R10  Net-_D6-Pad1_ GNDD 470		
+D6  Net-_D6-Pad1_ GPIO23 LED		
+R11  Net-_D7-Pad1_ GNDD 470		
+D7  Net-_D7-Pad1_ GPIO24 LED		
+U2  Net-_A0-Pad1_ ? ? ? GNDD GNDD GNDD GNDD GPIO02-SDA1-I2C GPIO03-SCL1-I2C ? GNDA GNDA +3V3 ? +5V PCF8591		
+BH1  GNDD GPIO02-SDA1-I2C GPIO03-SCL1-I2C GNDD +3V3 BH1750		
+I2C-1  GPIO03-SCL1-I2C GPIO02-SDA1-I2C +5V GNDD GROVE-CONNECTOR-DIP_4P-2.0_		
+A0  Net-_A0-Pad1_ ? +5V GNDD GROVE-CONNECTOR-DIP_4P-2.0_		
+C1  +3V3 Net-_C1-Pad2_ C		
+C2  +3V3 Net-_C2-Pad2_ C		
+
+.end
