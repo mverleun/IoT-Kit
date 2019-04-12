@@ -25,3 +25,5 @@ BLE/*
 IoT Kit/*
 wemos*
 bmp280.yaml
+*.bak
+*.kicad_pcb-bak
