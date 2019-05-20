@@ -27,3 +27,4 @@ wemos*
 bmp280.yaml
 *.bak
 *.kicad_pcb-bak
+.esphome/huzzah-1.yaml.json
